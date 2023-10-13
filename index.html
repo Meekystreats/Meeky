@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom right, #33ccff, #ff99cc);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            color: white;
+        }
+
+        #tic-tac-toe-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            max-width: 300px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #333;
+            cursor: pointer;
+        }
+
+        .cell:hover {
+            background-color: #f2f2f2;
+        }
+
+        .cell.winner {
+            background-color: #33ff33;
+        }
+
+        #new-game-button {
+            margin-top: 20px;
+            background-color: #ffcc00;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #new-game-button:hover {
+            background-color: #ffaa00;
+        }
+
+        #winner-screen, #draw-screen {
+            display: none;
+            background-color: white;
+            border-radius: 5px;
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        #winner-screen h2, #draw-screen h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div id="tic-tac-toe-board">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+    </div>
+    <p id="winner-message"></p>
+    <button id="new-game-button">New Game</button>
+    <div id="winner-screen">
+        <h2>Player Wins!</h2>
+        <button id="winner-new-game-button">New Game</button>
+    </div>
+    <div id="draw-screen">
+        <h2>It's a Draw!</h2>
+        <button id="draw-new-game-button">New Game</button>
+    </div>
+    <script>
+        const cells = document.querySelectorAll('[data-cell]');
+        const winnerMessage = document.getElementById('winner-message');
+        const newGameButton = document.getElementById('new-game-button');
+        const winnerScreen = document.getElementById('winner-screen');
+        const winnerNewGameButton = document.getElementById('winner-new-game-button');
+        const drawScreen = document.getElementById('draw-screen');
+        const drawNewGameButton = document.getElementById('draw-new-game-button');
+        let xIsNext = true;
+        let gameOver = false;
+
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+
+        function checkWinner() {
+            for (const combination of winningCombinations) {
+                const [a, b, c] = combination;
+                if (cells[a].innerText && cells[a].innerText === cells[b].innerText && cells[a].innerText === cells[c].innerText) {
+                    cells[a].classList.add('winner');
+                    cells[b].classList.add('winner');
+                    cells[c].classList.add('winner');
+                    winnerMessage.innerText = `${cells[a].innerText} wins!`;
+                    gameOver = true;
+                    winnerScreen.style.display = 'block';
+                }
+            }
+
+            if (!cells.some(cell => cell.innerText === '') && !gameOver) {
+                winnerMessage.innerText = "It's a draw!";
+                gameOver = true;
+                drawScreen.style.display = 'block';
+            }
+        }
+
+        function handleClick(cell) {
+            if (!cell.innerText && !gameOver) {
+                cell.innerText = xIsNext ? 'X' : 'O';
+                xIsNext = !xIsNext;
+                checkWinner();
+            }
+        }
+
+        function startNewGame() {
+            cells.forEach(cell => {
+                cell.innerText = '';
+                cell.classList.remove('winner');
+            });
+            winnerMessage.innerText = '';
+            winnerScreen.style.display = 'none';
+            drawScreen.style.display = 'none';
+            gameOver = false;
+            xIsNext = true;
+        }
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => handleClick(cell));
+        });
+
+        newGameButton.addEventListener('click', startNewGame);
+        winnerNewGameButton.addEventListener('click', startNewGame);
+        drawNewGameButton.addEventListener('click', startNewGame);
+    </script>
+</body>
+</html>
